@@ -5,7 +5,10 @@
 FROM golang:1.22-alpine AS builder
 
 WORKDIR /usr/src/app/
-
+ARG DD_GIT_REPOSITORY_URL
+ARG DD_GIT_COMMIT_SHA
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
+ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,source=./src/checkoutservice/go.sum,target=go.sum \
     --mount=type=bind,source=./src/checkoutservice/go.mod,target=go.mod \

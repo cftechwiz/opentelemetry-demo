@@ -19,5 +19,9 @@ COPY ./src/loadgenerator/locustfile.py .
 COPY ./src/loadgenerator/people.json .
 ENV LOCUST_PLAYWRIGHT=1
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers
+ARG DD_GIT_REPOSITORY_URL
+ARG DD_GIT_COMMIT_SHA
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
+ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 RUN playwright install --with-deps chromium
 ENTRYPOINT ["locust", "--skip-log-setup"]

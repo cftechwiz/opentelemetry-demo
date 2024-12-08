@@ -27,7 +27,10 @@ COPY --from=builder /app/src/instrumentation.ts ./instrumentation.ts
 COPY --from=builder /app/next.config.mjs ./next.config.mjs
 
 COPY --from=builder /app/.next ./.next
-
+ARG DD_GIT_REPOSITORY_URL
+ARG DD_GIT_COMMIT_SHA
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
+ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 EXPOSE 4000
 
 CMD ["npm", "start"]
