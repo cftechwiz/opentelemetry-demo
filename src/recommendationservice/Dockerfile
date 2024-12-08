@@ -27,7 +27,7 @@ COPY --from=builder /reqs /usr/local
 COPY ./src/recommendationservice/ ./
 ARG DD_GIT_REPOSITORY_URL
 ARG DD_GIT_COMMIT_SHA
-ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL}
 ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 RUN opentelemetry-bootstrap -a install
 

@@ -22,6 +22,6 @@ ADD --chmod=644 https://github.com/open-telemetry/opentelemetry-java-instrumenta
 ENV JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-javaagent.jar
 ARG DD_GIT_REPOSITORY_URL
 ARG DD_GIT_COMMIT_SHA
-ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL}
 ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 ENTRYPOINT [ "java", "-jar", "frauddetectionservice-1.0-all.jar" ]
