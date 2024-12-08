@@ -41,6 +41,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -309,9 +310,48 @@ func (p *productCatalog) checkProductFailure(ctx context.Context, id string) boo
 	return failureEnabled
 }
 
+// func createClient(ctx context.Context, svcAddr string) (*grpc.ClientConn, error) {
+// 	return grpc.DialContext(ctx, svcAddr,
+// 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+// 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+// 	)
+// }
+
 func createClient(ctx context.Context, svcAddr string) (*grpc.ClientConn, error) {
-	return grpc.DialContext(ctx, svcAddr,
+	// Add timeout to context
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	// Connection options
+	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
-	)
+		grpc.WithBlock(), // Make connection blocking
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:                10 * time.Second, // Keepalive ping interval
+			Timeout:             5 * time.Second,  // Keepalive ping timeout
+			PermitWithoutStream: true,             // Allow keepalive without active streams
+		}),
+		grpc.WithDefaultServiceConfig(`{
+            "loadBalancingPolicy": "round_robin",
+            "retryPolicy": {
+                "MaxAttempts": 3,
+                "InitialBackoff": "0.1s",
+                "MaxBackoff": "1s",
+                "BackoffMultiplier": 2.0,
+                "RetryableStatusCodes": [ "UNAVAILABLE" ]
+            }
+        }`),
+	}
+
+	// Create connection with retry logic
+	var conn *grpc.ClientConn
+	var err error
+
+	conn, err = grpc.DialContext(ctx, svcAddr, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create gRPC client: %v", err)
+	}
+
+	return conn, nil
 }
