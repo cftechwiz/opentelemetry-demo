@@ -211,7 +211,7 @@ jobs:
             OPENTELEMETRY_CPP_VERSION=${{ env.OPENTELEMETRY_CPP_VERSION }}
             TRACETEST_IMAGE_VERSION=${{ env.TRACETEST_IMAGE_VERSION }}
             DD_GIT_REPOSITORY_URL=${{ env.REPOSITORY_URL }}
-            DD_GIT_COMMIT_SHA=${{ github.event.pull_request.head.sha }}
+            DD_GIT_COMMIT_SHA=$(git rev-parse HEAD)
           tags: |
             ${{ inputs.dockerhub_repo }}:${{ inputs.version }}-${{matrix.file_tag.tag_suffix }}
             ${{ inputs.dockerhub_repo }}:latest-${{matrix.file_tag.tag_suffix }}
