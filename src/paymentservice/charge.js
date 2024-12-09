@@ -42,9 +42,6 @@ module.exports.charge = async (request) => {
   span.setAttributes({
     "app.payment.card_type": cardType,
     "app.payment.card_valid": valid,
-    "app.payment.card_number": creditCardNumber,
-    "app.payment.card_exp": creditCardExpirationMonth,
-    creditCardExpirationYear,
   });
 
   if (!valid) {
